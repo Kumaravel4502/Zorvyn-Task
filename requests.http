@@ -1,0 +1,101 @@
+@baseUrl = http://localhost:5001/api
+@token = {{login.response.body.token}}
+@adminToken = {{adminLogin.response.body.token}}
+
+### 1. Register a new Viewer
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "testuser@example.com",
+    "password": "password123"
+}
+
+### 2. Register an Admin
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "adminuser",
+    "email": "admin@example.com",
+    "password": "password123",
+    "role": "Admin"
+}
+
+### 3. Login as User
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "testuser@example.com",
+    "password": "password123"
+}
+
+### 4. Login as Admin
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "password123"
+}
+
+### 5. Get current User profile (Private)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### -------------------------------------------
+### USERS ENDPOINTS (Require Admin)
+### -------------------------------------------
+
+### 6. Get all users
+GET {{baseUrl}}/users
+Authorization: Bearer {{adminToken}}
+
+### -------------------------------------------
+### RECORDS ENDPOINTS
+### -------------------------------------------
+
+### 7. Create a new record (Authorized)
+POST {{baseUrl}}/records
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "amount": 1500,
+    "type": "income",
+    "category": "Salary",
+    "date": "2023-11-01",
+    "notes": "November Salary"
+}
+
+### 8. Create another record
+POST {{baseUrl}}/records
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+    "amount": 200,
+    "type": "expense",
+    "category": "Groceries",
+    "date": "2023-11-05"
+}
+
+### 9. Get all records with pagination
+GET {{baseUrl}}/records?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 10. Filter records by type
+GET {{baseUrl}}/records?type=expense
+Authorization: Bearer {{token}}
+
+### -------------------------------------------
+### DASHBOARD ENDPOINTS
+### -------------------------------------------
+
+### 11. Get Dashboard Summary
+GET {{baseUrl}}/dashboard/summary
+Authorization: Bearer {{token}}
